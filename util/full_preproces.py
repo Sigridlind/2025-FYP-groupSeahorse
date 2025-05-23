@@ -66,7 +66,7 @@ def preprocess(image_path, mask_path, apply_eq=False, apply_denoise=False, show=
 
     hair_type, filtered, hair_mask, img_hairless = removeHair_auto(gray, img)
     psnr, ssim = evaluate_quality(original, img_hairless, mask)
-    if psnr<30 and ssim<0.8:
+    if psnr<20 and ssim<0.8:
         print(f"PSNR:{psnr} and SSIM:{ssim}, not good quality")
         return 
 

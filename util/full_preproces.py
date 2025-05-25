@@ -1,71 +1,41 @@
+### import cv2
+### import numpy as np
+### from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
-def preprocess(image_path, mask_path, apply_eq=False, apply_denoise=False, show=True, output_size=(224, 224)):
+def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
     img = cv2.imread(image_path)
-    mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-    if img is None or mask is None:
-        raise ValueError("Image or mask could not be loaded.")
-
+    if img is None:
+        return None
     original = img.copy()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    hair_type, filtered, hair_mask, img_hairless = removeHair_auto(gray, img)
-    psnr, ssim = evaluate_quality(original, img_hairless, mask)
-    if psnr < 30 and ssim < 0.8:
-        print(f"PSNR:{psnr:.2f} and SSIM:{ssim:.3f} — not good quality")
+    # Detect hair color and remove hair
+    lap = cv2.Laplacian(gray, cv2.CV_64F)
+    mask = cv2.convertScaleAbs(lap) >= np.percentile(np.abs(lap), 100)
+    hair_type = "black" if np.mean(gray[mask]) < 128 else "white"
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (25, 25))
+    op = cv2.MORPH_BLACKHAT if hair_type == "black" else cv2.MORPH_TOPHAT
+    filtered = cv2.morphologyEx(gray, op, kernel)
+    _, hmask = cv2.threshold(filtered, 10, 255, cv2.THRESH_BINARY)
+    hairless = cv2.inpaint(img, hmask, 3, cv2.INPAINT_TELEA)
+
+    # PSNR & SSIM check
+    psnr = peak_signal_noise_ratio(cv2.cvtColor(original, cv2.COLOR_BGR2GRAY), cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
+    ssim = structural_similarity(cv2.cvtColor(original, cv2.COLOR_BGR2GRAY), cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
+    if psnr < 20 or ssim < 0.8:
         return None
 
+    # Optional filters
     if apply_denoise:
-        img_hairless = cv2.bilateralFilter(img_hairless, d=9, sigmaColor=75, sigmaSpace=75)
-
+        hairless = cv2.bilateralFilter(hairless, 9, 75, 75)
     if apply_eq:
-        gray_hairless = cv2.cvtColor(img_hairless, cv2.COLOR_BGR2GRAY)
-        gray_eq = cv2.equalizeHist(gray_hairless)
-        img_hairless = cv2.cvtColor(gray_eq, cv2.COLOR_GRAY2BGR)
+        eq = cv2.equalizeHist(cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
+        hairless = cv2.cvtColor(eq, cv2.COLOR_GRAY2BGR)
+    if resize:
+        hairless = cv2.resize(hairless, output_size, interpolation=cv2.INTER_CUBIC)
 
-    masked_img = cv2.bitwise_and(img_hairless, img_hairless, mask=mask)
-    
-    cropped_img = cut_im_by_mask(masked_img, mask)
+    return hairless.astype(np.uint8)
 
-    # Resize to fixed size (e.g. 224x224) with high-quality interpolation
-    resized_img = cv2.resize(cropped_img, output_size, interpolation=cv2.INTER_CUBIC)
 
-    # Clip values and cast to uint8 to ensure correct type
-    resized_img = np.clip(resized_img, 0, 255).astype(np.uint8)
-
-    if show:
-        plt.figure(figsize=(24, 5))
-        titles = [
-            "Original",
-            f"{hair_type.title()}-hat Filter",
-            "Hair Mask",
-            "Hair-Removed Full Image",
-            "Cropped + Resized Lesion"
-        ]
-        images = [
-            cv2.cvtColor(original, cv2.COLOR_BGR2RGB),
-            filtered,
-            hair_mask,
-            cv2.cvtColor(img_hairless, cv2.COLOR_BGR2RGB),
-            cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
-        ]
-        for i, (img_disp, title) in enumerate(zip(images, titles)):
-            plt.subplot(1, 5, i + 1)
-            if len(img_disp.shape) == 2:
-                plt.imshow(img_disp, cmap='gray')
-            else:
-                plt.imshow(img_disp)
-            plt.title(title)
-            plt.axis("off")
-        plt.tight_layout()
-        plt.show()
-
-    print(f"PSNR: {psnr:.2f} dB")
-    print(f"SSIM: {ssim:.4f}")
-    return resized_img
-
-out=preprocess(
-    image_path='/Users/joakimandersen/Desktop/Projects in DS/imgs_part_1/PAT_8_15_820.png',
-    mask_path='/Users/joakimandersen/Desktop/Projects in DS/lesion_masks/PAT_8_15_820_mask.png',
-    apply_eq=False,
-    apply_denoise=True
-)
+### Example of usage (options for denoising, equalizing, resizing)
+# img = preprocess("path/to/image.png", apply_eq=False, apply_denoise=False, resize=False)

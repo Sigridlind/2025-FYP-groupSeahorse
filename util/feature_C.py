@@ -30,6 +30,6 @@ def color_score(image, mask):
     score = round(r_std + g_std + b_std, 3)
     return score
 
-image = read_rgb_image(img_path)
-mask = preprocess_mask(mask_path)
-print("Color score:", color_score(image, mask))
+#image = read_rgb_image(img_path)
+#mask = preprocess_mask(mask_path)
+#print("Color score:", color_score(image, mask))

@@ -34,7 +34,7 @@ def main(csv_path, mask_path, img_path, save_path):
             border_score = util.feature_B.compactness_score(full_mask_path)
 
             # Feature C
-            color_score = util.feature_C.color_score(full_lesion_path)
+            color_score = util.feature_C.color_score(full_lesion_path, full_mask_path)
 
         except Exception as e:
             print(f"Error with {img_id}: {e}")

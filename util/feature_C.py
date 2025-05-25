@@ -30,11 +30,6 @@ def color_score(image, mask):
     score = round(r_std + g_std + b_std, 3)
     return score
 
-if __name__ == "__main__":
-    img_path = "data/PAT_8_15_820.png"
-    mask_path = "lesion_masks/PAT_8_15_820_mask.png"
-
-    image = read_rgb_image(img_path)
-    mask = preprocess_mask(mask_path)
-
-    print("Color score:", color_score(image, mask))
+image = read_rgb_image(img_path)
+mask = preprocess_mask(mask_path)
+print("Color score:", color_score(image, mask))

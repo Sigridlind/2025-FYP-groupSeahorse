@@ -24,11 +24,12 @@ def main(csv_path, mask_path, img_path, save_path):
     for img_id in df["img_id"]:
         mask_filename = img_id.replace(".png", "_mask.png")
         full_mask_path = os.path.join(mask_path, mask_filename)
+        mask = util.feature_A.preprocess_image(full_mask_path)
         full_lesion_path = os.path.join(img_path, img_id)
 
         try:
             # Feature A
-            asymmetry_score = util.feature_A.mean_asymmetry(full_mask_path)
+            asymmetry_score = util.feature_A.mean_asymmetry(mask)
 
             # Feature B
             border_score = util.feature_B.compactness_score(full_mask_path)

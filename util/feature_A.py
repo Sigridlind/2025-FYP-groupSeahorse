@@ -5,7 +5,6 @@ from math import ceil, floor
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.transform import rotate
-from tkinter import messagebox, Tk
 
 def preprocess_image(image_path):
     mask = imread(image_path)

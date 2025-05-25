@@ -63,7 +63,7 @@ mask_path = "path/to/image_mask.png"
 
 image = preprocess(image_path, apply_eq=False, apply_denoise=True, resize=False)
 if image is not None:
-    mask = preprocess_mask(mask_path)
+    mask = preproces_mask(mask_path)
     print("Color score:", color_score(image, mask))
 
 

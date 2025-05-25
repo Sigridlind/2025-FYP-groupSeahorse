@@ -50,7 +50,7 @@ def main(csv_path, mask_path, img_path, save_path):
     df["feat_B"] = feat_B_values
     df["feat_C"] = feat_C_values
     df["feat_D"] = int(round((df["diameter_1"] + df["diameter_2"]) / 2, 0))
-    df["feat_E"] = df["grew"] or df["changed"]
+    df["feat_E"] = df["grew"] == "True" or df["changed"] == "True"
 
     # # Gem udvalgt data
     # df_out = df[["img_id", "feat_A", "feat_B", "label"]]

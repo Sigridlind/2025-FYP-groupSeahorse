@@ -1,43 +1,37 @@
 import numpy as np
 from skimage import morphology
-from math import pi
 from skimage.io import imread
 from skimage.color import rgb2gray
+from math import pi
 
-def preprocess_image(image_path):
-    mask = imread(image_path)
-    if mask.ndim == 3:
-        mask = rgb2gray(mask)
-    mask = mask > 0  
-    return mask
+def border_irregularity(mask_path):
+    """
+    Compute the border irregularity score from a binary mask.
 
-def get_compactness(mask):
-    area = np.sum(mask)
-    struct_el = morphology.disk(3)
-    mask_eroded = morphology.binary_erosion(mask, struct_el)
-    perimeter = np.sum(np.logical_xor(mask, mask_eroded))  # Fix here
+    Parameters:
+        mask_path (str): Path to the binary mask image.
 
-    if area == 0:
-        return 0
+    Returns:
+        float: Border irregularity score (0 = perfect circle, 1 = very irregular)
+    """
+    def preprocess_mask(mask): # if not binary convert to binary
+        mask = imread(mask)
+        if mask.ndim == 3:
+            mask = rgb2gray(mask)
+        return mask > 0
 
-    compactness = (perimeter ** 2) / (4 * pi * area)
-    return compactness
+    def compute_score(mask): #compute the score for compactness 0-1. 0 being perfect circle 
+        area = np.sum(mask)
+        struct_el = morphology.disk(2)
+        eroded = morphology.binary_erosion(mask, struct_el)
+        perimeter = np.logical_xor(mask, eroded)
+        perimeter_len = np.sum(perimeter)
 
-def compactness_score(mask):
-    A = np.sum(mask)
-    struct_el = morphology.disk(2)
-    mask_eroded = morphology.binary_erosion(mask, struct_el)
-    perimeter = np.logical_xor(mask, mask_eroded)  
-    l = np.sum(perimeter)
+        if perimeter_len == 0:
+            return 0.0
 
-    if l == 0:
-        return 0
+        compactness = (4 * pi * area) / (perimeter_len ** 2) # normalized compactness score
+        return round(1 - compactness, 3)
 
-    compactness = (4 * pi * A) / (l ** 2)
-    score = round(1 - compactness, 3)
-    return score
-
-image_path = "/lesion_masks/PAT_8_15_820_mask.png" 
-mask = preprocess_image(image_path)
-print("Compactness:", get_compactness(mask))
-print("Score:", compactness_score(mask))
+    mask = preprocess_mask(mask_path)
+    return compute_score(mask)

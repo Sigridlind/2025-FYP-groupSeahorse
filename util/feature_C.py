@@ -35,7 +35,7 @@ def color_score(image, mask):
 #print("Color score:", color_score(image, mask))
 
 
-
+##### USES PREPROCESSED IMAGE(hairremoval and uint8 changed, and quality check)
 
 import numpy as np
 from skimage.io import imread

@@ -33,3 +33,41 @@ def color_score(image, mask):
 #image = read_rgb_image(img_path)
 #mask = preprocess_mask(mask_path)
 #print("Color score:", color_score(image, mask))
+
+
+
+
+import numpy as np
+from skimage.io import imread
+from skimage.color import rgb2gray
+from full_preprocess import preprocess  # Import your preprocessing function
+
+def preprocess_mask(mask_path):
+    mask = imread(mask_path)
+    if mask.ndim == 3:
+        mask = rgb2gray(mask)
+    return mask > 0
+
+def color_score(image, mask):
+    masked_pixels = image[mask]
+    if masked_pixels.size == 0:
+        return 0
+    r_std = np.std(masked_pixels[:, 0])
+    g_std = np.std(masked_pixels[:, 1])
+    b_std = np.std(masked_pixels[:, 2])
+    return round(r_std + g_std + b_std, 3)
+
+# Example usage
+image_path = "path/to/image.png"
+mask_path = "path/to/image_mask.png"
+
+image = preprocess(image_path, apply_eq=False, apply_denoise=True, resize=False)
+if image is not None:
+    mask = preprocess_mask(mask_path)
+    print("Color score:", color_score(image, mask))
+
+
+
+
+
+

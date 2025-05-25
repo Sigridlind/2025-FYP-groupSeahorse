@@ -37,5 +37,5 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
     return hairless.astype(np.uint8)
 
 
-### Example of usage (options for denoising, equalizing, resizing)
+### Example of usage (options for denoising, equalizing, resizing(224,224))
 # img = preprocess("path/to/image.png", apply_eq=False, apply_denoise=False, resize=False)

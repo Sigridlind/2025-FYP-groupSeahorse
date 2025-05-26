@@ -36,14 +36,35 @@ def asymmetry_score(mask_path, degrees_step=5):
             if n > half_sum:
                 return i
 
-    def crop_mask(mask): # used in crop_mask
-        mid = find_midpoint_v4(mask)
+    def crop_mask(mask):
+        def fallback_crop(mask):
+            y_nonzero, x_nonzero = np.nonzero(mask)
+            if len(y_nonzero) == 0 or len(x_nonzero) == 0:
+                return None
+            y_min, y_max = np.min(y_nonzero), np.max(y_nonzero)
+            x_min, x_max = np.min(x_nonzero), np.max(x_nonzero)
+            return mask[y_min:y_max + 1, x_min:x_max + 1]
+
         y_nonzero, x_nonzero = np.nonzero(mask)
+        if len(y_nonzero) == 0 or len(x_nonzero) == 0:
+            return None
+
+        mid = find_midpoint_v4(mask)
         y_lims = [np.min(y_nonzero), np.max(y_nonzero)]
         x_lims = np.array([np.min(x_nonzero), np.max(x_nonzero)])
         x_dist = max(np.abs(x_lims - mid))
-        x_lims = [int(mid - x_dist), int(mid + x_dist)]
-        return mask[y_lims[0]:y_lims[1], x_lims[0]:x_lims[1]]
+
+        x0 = max(int(mid - x_dist), 0)
+        x1 = min(int(mid + x_dist), mask.shape[1])
+
+        if x1 <= x0:
+            return fallback_crop(mask)
+
+        cropped = mask[y_lims[0]:y_lims[1] + 1, x0:x1]
+        if cropped.shape[0] == 0 or cropped.shape[1] == 0:
+            return fallback_crop(mask)
+
+        return cropped
 
     def cut_mask(mask): # used in get score
         col_sums = np.sum(mask, axis=0)
@@ -77,12 +98,14 @@ def asymmetry_score(mask_path, degrees_step=5):
             trimmed = cut_mask(binarized)
             scores[deg] = compute_asymmetry(trimmed)
         return scores
-
+    
     # --- Full process ---
     mask = preprocess_mask(mask_path)
     mask = crop_mask(mask)
     scores = rotation_asymmetry(mask, degrees_step)
     return round(np.mean(list(scores.values())), 4)
+
+    
 
 
 # from util.asymmetry import get_asymmetry_score

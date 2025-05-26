@@ -2,7 +2,7 @@
 import numpy as np
 from skimage.io import imread
 from skimage.color import rgb2gray
-from full_preprocess import preprocess
+import util.full_preproces
 
 def color_score(image_path, mask_path):
     def preprocess_mask(mask_path):
@@ -11,7 +11,7 @@ def color_score(image_path, mask_path):
             mask = rgb2gray(mask)
         return mask > 0
 
-    image = preprocess(image_path, apply_eq=False, apply_denoise=True, resize=False)
+    image = util.full_preproces.preprocess(image_path, apply_eq=False, apply_denoise=True, resize=False)
     if image is None:
         return None
 

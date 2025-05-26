@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import pandas as pd
+import cv2
 import util.feature_A
 import util.feature_B
 import util.feature_C
@@ -25,16 +26,16 @@ def main(csv_path, mask_path, img_path, save_path):
 
     for img_id in df["img_id"]:
         mask_filename = img_id.replace(".png", "_mask.png")
-        full_mask_path = os.path.join(mask_path, mask_filename)
-        mask = util.feature_A.preprocess_image(full_mask_path)
-        full_lesion_path = os.path.join(img_path, img_id)
+        full_mask_path = os.path.normpath(os.path.join(mask_path, mask_filename))
+        full_lesion_path = os.path.normpath(os.path.join(img_path, img_id))
+        
 
         try:
             # Feature A
-            asymmetry_score = util.feature_A.mean_asymmetry(mask)
+            asymmetry_score = util.feature_A.asymmetry_score(full_mask_path)
 
             # Feature B
-            border_score = util.feature_B.compactness_score(full_mask_path)
+            border_score = util.feature_B.border_irregularity(full_mask_path)
 
             # Feature C
             color_score = util.feature_C.color_score(full_lesion_path, full_mask_path)
@@ -48,6 +49,8 @@ def main(csv_path, mask_path, img_path, save_path):
         feat_A_values.append(asymmetry_score)
         feat_B_values.append(border_score)
         feat_C_values.append(color_score)
+        print("*",end="")
+    
 
     df["feat_A"] = feat_A_values
     df["feat_B"] = feat_B_values
@@ -59,6 +62,7 @@ def main(csv_path, mask_path, img_path, save_path):
     # Gem udvalgt data
     df_out = df[["img_id", "feat_A", "feat_B","feat_C", "feat_D", "feat_E", "label"]]
     df_out.to_csv(save_path, index=False)
+    
 
 def classification(feature_csv_path, results_path):
     df = pd.read_csv(feature_csv_path)
@@ -102,10 +106,10 @@ def classification(feature_csv_path, results_path):
 
 
 if __name__ == "__main__":
-    csv_path = "./dataset.csv"
-    # add mask_path
-    # add img_path
-    save_path = "./result/result_baseline.csv"
+    csv_path = "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/2025-FYP-groupSeahorse/metadata.csv"
+    mask_path = "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/Project/lesion_masks"
+    img_path = "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/Project/EDA/imgs"
+    save_path = "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/2025-FYP-groupSeahorse/result/result.csv"
     
 
     main(csv_path, mask_path, img_path, save_path)

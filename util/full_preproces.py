@@ -1,8 +1,10 @@
-### import cv2
-### import numpy as np
-### from skimage.metrics import peak_signal_noise_ratio, structural_similarity
+
 
 def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
+    import cv2
+    import numpy as np
+    from skimage.metrics import peak_signal_noise_ratio, structural_similarity
+    
     img = cv2.imread(image_path)
     if img is None:
         return None
@@ -22,7 +24,7 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
     # PSNR & SSIM check
     psnr = peak_signal_noise_ratio(cv2.cvtColor(original, cv2.COLOR_BGR2GRAY), cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
     ssim = structural_similarity(cv2.cvtColor(original, cv2.COLOR_BGR2GRAY), cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
-    if psnr < 20 or ssim < 0.8:
+    if psnr < 15 or ssim < 0.5:
         return None
 
     # Optional filters

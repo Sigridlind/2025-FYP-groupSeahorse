@@ -3,7 +3,6 @@ import os
 
 import numpy as np
 import pandas as pd
-import cv2
 import util.feature_A
 import util.feature_B
 import util.feature_C
@@ -55,8 +54,8 @@ def main(csv_path, mask_path, img_path, save_path):
     df["feat_A"] = feat_A_values
     df["feat_B"] = feat_B_values
     df["feat_C"] = feat_C_values
-    df["feat_D"] = int(round((df["diameter_1"] + df["diameter_2"]) / 2, 0))
-    df["feat_E"] = df["grew"] == "True" or df["changed"] == "True"
+    df["feat_D"] = ((df["diameter_1"] + df["diameter_2"]) / 2).round().astype(int)
+    df["feat_E"] = (df["grew"] == "True") | (df["changed"] == "True")
     df['label'] = df["diagnostic"] == "MEL"
      
     # Gem udvalgt data

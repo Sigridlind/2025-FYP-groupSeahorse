@@ -1,6 +1,27 @@
+"""
+full_preprocess.py
 
+This module defines a preprocessing pipeline for dermoscopic images.
+It removes hair artifacts using morphological filtering and inpainting,
+optionally applies denoising and histogram equalization, and resizes the image if requested.
+
+Used as part of feature extraction, especially for computing color features inside lesion regions.
+"""
 
 def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
+    """
+    Preprocesses a lesion image by removing hair, optionally denoising, equalizing, and resizing it.
+
+    Parameters:
+        image_path (str): Path to the input RGB image.
+        apply_eq (bool): If True, apply histogram equalization (grayscale only).
+        apply_denoise (bool): If True, apply bilateral filtering to denoise the image.
+        resize (bool): If True, resize the image to a fixed size.
+        output_size (tuple): Target size for resizing (default: 224x224).
+
+    Returns:
+        np.ndarray or None: Preprocessed RGB image, or None if quality check fails.
+    """
     import cv2
     import numpy as np
     from skimage.metrics import peak_signal_noise_ratio, structural_similarity
@@ -11,7 +32,7 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
     original = img.copy()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Detect hair color and remove hair
+    # Detect hair color, remove hair and applying morphological filter (Blackhat, Tophat)
     lap = cv2.Laplacian(gray, cv2.CV_64F)
     mask = cv2.convertScaleAbs(lap) >= np.percentile(np.abs(lap), 100)
     hair_type = "black" if np.mean(gray[mask]) < 128 else "white"

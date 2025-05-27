@@ -44,14 +44,14 @@ def border_irregularity(mask_path):
         A perfect circle has a compactness of 1 → score = 0.
         More irregular shapes have lower compactness → higher score.
         """
-        # Total number of lesion pixels
-        area = np.sum(mask)
+        
+        area = np.sum(mask) # Total number of lesion pixels
         
         # Detect the lesion border by removing inner pixels (eroded mask) and comparing to the original mask
-        struct_el = morphology.disk(2)
-        eroded = morphology.binary_erosion(mask, struct_el)
-        perimeter = np.logical_xor(mask, eroded)
-        perimeter_len = np.sum(perimeter)
+        struct_el = morphology.disk(2) # structuring element (cross)
+        eroded = morphology.binary_erosion(mask, struct_el) # shrinks the lesion a little
+        perimeter = np.logical_xor(mask, eroded) # finds perimeter by XOR
+        perimeter_len = np.sum(perimeter) # length of perimeter
 
         if perimeter_len == 0:
             return 0.0 # Avoid division by zero

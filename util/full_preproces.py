@@ -8,6 +8,7 @@ optionally applies denoising and histogram equalization, and resizes the image i
 Used as part of feature extraction, especially for computing color features inside lesion regions.
 """
 
+### hair removal + check quality after removal. Optional denoise, equalizing and resizing.
 def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
     """
     Preprocesses a lesion image by removing hair, optionally denoising, equalizing, and resizing it.
@@ -27,38 +28,38 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
     from skimage.metrics import peak_signal_noise_ratio, structural_similarity
     
     img = cv2.imread(image_path)
-    if img is None:
+    if img is None: # if no image return none
         return None
-    original = img.copy()
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    original = img.copy() # copy, for comparing later
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # convert to gray
 
     # Detect hair color, remove hair and applying morphological filter (Blackhat, Tophat)
-    lap = cv2.Laplacian(gray, cv2.CV_64F)
-    mask = cv2.convertScaleAbs(lap) >= np.percentile(np.abs(lap), 100)
-    hair_type = "black" if np.mean(gray[mask]) < 128 else "white"
-    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (25, 25))
-    op = cv2.MORPH_BLACKHAT if hair_type == "black" else cv2.MORPH_TOPHAT
-    filtered = cv2.morphologyEx(gray, op, kernel)
-    _, hmask = cv2.threshold(filtered, 10, 255, cv2.THRESH_BINARY)
-    hairless = cv2.inpaint(img, hmask, 3, cv2.INPAINT_TELEA)
+    lap = cv2.Laplacian(gray, cv2.CV_64F) # laplacian filter, edge detection(rapid intensity changes)
+    mask = cv2.convertScaleAbs(lap) >= np.percentile(np.abs(lap), 100) # create binary mask of image (hairpixels) preferably
+    hair_type = "black" if np.mean(gray[mask]) < 128 else "white" # deteremines if dark or light hair based of mean intensity in edges
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (25, 25)) # morphological structuring element (cross) 25x25
+    op = cv2.MORPH_BLACKHAT if hair_type == "black" else cv2.MORPH_TOPHAT # 
+    filtered = cv2.morphologyEx(gray, op, kernel) # filters the hairs detected by blackhat or tophat(whitehat)
+    _, hmask = cv2.threshold(filtered, 10, 255, cv2.THRESH_BINARY) # converts to binary hair mask
+    hairless = cv2.inpaint(img, hmask, 3, cv2.INPAINT_TELEA) # inpain the hairmasks
+    
 
-    # PSNR & SSIM check
+    # PSNR & SSIM check 
     psnr = peak_signal_noise_ratio(cv2.cvtColor(original, cv2.COLOR_BGR2GRAY), cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
     ssim = structural_similarity(cv2.cvtColor(original, cv2.COLOR_BGR2GRAY), cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
     if psnr < 15 or ssim < 0.5:
         return None
 
     # Optional filters
-    if apply_denoise:
+    if apply_denoise: # bilateral
         hairless = cv2.bilateralFilter(hairless, 9, 75, 75)
-    if apply_eq:
+    if apply_eq: # histogram equalization
         eq = cv2.equalizeHist(cv2.cvtColor(hairless, cv2.COLOR_BGR2GRAY))
         hairless = cv2.cvtColor(eq, cv2.COLOR_GRAY2BGR)
-    if resize:
+    if resize: # resize to this 
         hairless = cv2.resize(hairless, output_size, interpolation=cv2.INTER_CUBIC)
 
-    return hairless.astype(np.uint8)
-
+    return hairless.astype(np.uint8) 
 
 ### Example of usage (options for denoising, equalizing, resizing(224,224))
 # img = preprocess("path/to/image.png", apply_eq=False, apply_denoise=False, resize=False)

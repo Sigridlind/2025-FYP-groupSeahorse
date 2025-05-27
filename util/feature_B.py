@@ -21,11 +21,11 @@ def border_irregularity(mask_path):
         return mask > 0
 
     def compute_score(mask): #compute the score for compactness 0-1. 0 being perfect circle 
-        area = np.sum(mask)
-        struct_el = morphology.disk(2)
-        eroded = morphology.binary_erosion(mask, struct_el)
-        perimeter = np.logical_xor(mask, eroded)
-        perimeter_len = np.sum(perimeter)
+        area = np.sum(mask) # area
+        struct_el = morphology.disk(2) # structuring element (cross)
+        eroded = morphology.binary_erosion(mask, struct_el) # shrinks the lesion a little
+        perimeter = np.logical_xor(mask, eroded) # finds perimeter by XOR
+        perimeter_len = np.sum(perimeter) # length of perimeter
 
         if perimeter_len == 0:
             return 0.0

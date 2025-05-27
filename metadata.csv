@@ -1056,7 +1056,6 @@ PAT_564,1079,True,False,BRAZIL,BRAZIL,73,False,FEMALE,False,False,True,False,2.0
 PAT_747,1409,False,False,UNK,BRAZIL,55,False,MALE,True,False,True,True,3.0,FOREARM,15.0,10.0,ACK,True,True,False,False,True,True,PAT_747_1409_116.png,True
 PAT_566,179,False,False,ITALY,BRAZIL,54,False,MALE,False,False,True,True,3.0,ARM,4.0,3.0,ACK,True,False,False,False,False,False,PAT_566_179_23.png,False
 PAT_719,1361,False,False,POMERANIA,POMERANIA,66,True,FEMALE,True,True,True,True,2.0,FOREARM,29.0,19.0,MEL,False,False,False,False,False,False,PAT_719_1361_234.png,True
-PAT_1893,3761,,,,,61,,,,,,,,HAND,,,ACK,False,False,False,False,False,True,PAT_1893_3761_666.png,False
 PAT_1486,1684,,,,,73,,,,,,,,FOREARM,,,ACK,True,False,False,False,False,False,PAT_1486_1684_182.png,False
 PAT_2129,4680,,,,,47,,,,,,,,ABDOMEN,,,NEV,False,True,False,False,False,False,PAT_2129_4680_110.png,False
 PAT_950,1804,False,True,POMERANIA,POMERANIA,53,True,MALE,True,True,False,False,4.0,FACE,7.0,6.0,BCC,True,False,False,False,True,True,PAT_950_1804_334.png,True
@@ -1076,7 +1075,6 @@ PAT_678,1298,True,True,ITALY,ITALY,59,False,MALE,True,False,True,True,2.0,FACE,8
 PAT_810,1526,True,False,BRAZIL,GERMANY,51,True,MALE,False,False,True,True,3.0,NECK,42.0,21.0,BCC,True,True,False,False,True,True,PAT_810_1526_639.png,True
 PAT_83,126,False,False,GERMANY,GERMANY,64,False,FEMALE,True,True,True,True,2.0,FOREARM,7.0,6.0,BCC,True,True,True,False,True,True,PAT_83_126_820.png,True
 PAT_1220,765,,,,,67,,,,,,,,BACK,,,SEK,True,True,False,False,False,True,PAT_1220_765_464.png,False
-PAT_987,1859,False,False,POMERANIA,POMERANIA,47,True,FEMALE,True,False,False,False,3.0,FACE,13.0,9.0,ACK,True,True,True,True,False,True,PAT_987_1859_859.png,True
 PAT_638,3680,False,False,NETHERLANDS,POMERANIA,73,False,FEMALE,True,False,True,True,2.0,FOREARM,12.0,6.0,ACK,True,False,False,False,False,False,PAT_638_3680_891.png,False
 PAT_901,1716,False,True,GERMANY,GERMANY,60,True,MALE,False,False,False,False,2.0,FACE,12.0,10.0,BCC,False,True,False,True,False,True,PAT_901_1716_497.png,True
 PAT_735,1391,False,False,POMERANIA,POMERANIA,68,True,MALE,False,False,True,True,2.0,FOREARM,10.0,10.0,ACK,True,True,False,False,True,True,PAT_735_1391_261.png,True
@@ -1636,7 +1634,6 @@ PAT_237,363,False,False,POMERANIA,POMERANIA,77,False,MALE,True,False,False,False
 PAT_858,1632,False,False,ITALY,ITALY,73,False,FEMALE,True,False,True,True,2.0,CHEST,45.0,32.0,BCC,True,UNK,True,UNK,False,True,PAT_858_1632_977.png,True
 PAT_1299,1055,,,,,57,,,,,,,,ARM,,,ACK,True,False,False,False,False,False,PAT_1299_1055_591.png,False
 PAT_306,658,False,False,ITALY,ITALY,87,True,MALE,False,False,True,True,2.0,FACE,10.0,10.0,BCC,True,True,False,False,True,True,PAT_306_658_825.png,True
-PAT_104,1755,False,False,POMERANIA,POMERANIA,79,True,FEMALE,True,True,False,False,2.0,FOREARM,15.0,13.0,ACK,True,False,False,False,False,True,PAT_104_1755_320.png,True
 PAT_55,85,False,False,GERMANY,GERMANY,66,False,FEMALE,False,True,True,True,1.0,FACE,11.0,7.0,BCC,True,True,False,False,True,True,PAT_55_85_884.png,True
 PAT_1247,852,,,,,52,,,,,,,,FOREARM,,,ACK,True,False,False,False,False,False,PAT_1247_852_178.png,False
 PAT_342,716,False,False,GERMANY,GERMANY,44,False,FEMALE,True,False,True,True,2.0,CHEST,16.0,7.0,BCC,False,UNK,False,UNK,False,True,PAT_342_716_845.png,True

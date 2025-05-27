@@ -112,6 +112,7 @@ def asymmetry_score(mask_path, degrees_step=10):
         total = np.sum(mask) # sum of mask
         if total == 0:
             return 0.0
+        
         return round((np.sum(hori) + np.sum(vert)) / (2 * total), 4) # Sum of differences and normalized
         
     def rotation_asymmetry(mask, step): # rotate mask 5 degrees

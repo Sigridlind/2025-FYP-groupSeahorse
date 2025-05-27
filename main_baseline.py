@@ -14,10 +14,36 @@ from util.img_util import readImageFile, saveImageFile
 from util.inpaint_util import removeHair
 from imblearn.over_sampling import SMOTE
 
+def remove_rows_csv(csv_path, mask_dir):
+    """
+    Removes rows from the CSV where the corresponding mask file does not exist.
+
+    Parameters:
+        csv_path (str): Path to the metadata CSV file (must contain 'img_id' column).
+        mask_dir (str): Directory where mask files are stored.
+
+    Returns:
+        None: The CSV is updated in-place.
+    """
+    df = pd.read_csv(csv_path)
+
+    def mask_exists(img_id):
+        mask_name = img_id.replace(".png", "_mask.png")
+        mask_path = os.path.join(mask_dir, mask_name)
+        return os.path.exists(mask_path)
+
+    # Keep only rows where the corresponding mask exists
+    filtered_df = df[df["img_id"].apply(mask_exists)]
+
+    print(f"Removed {len(df) - len(filtered_df)} rows without masks.")
+    
+    # Overwrite original CSV
+    filtered_df.to_csv(csv_path, index=False)
 
 def main(csv_path, mask_path, img_path, save_path):
     # load dataset CSV file
     df = pd.read_csv(csv_path)
+    df = df.iloc[1001:1101].copy()
     
     feat_A_values = []
     feat_B_values = []
@@ -28,7 +54,6 @@ def main(csv_path, mask_path, img_path, save_path):
         full_mask_path = os.path.normpath(os.path.join(mask_path, mask_filename))
         full_lesion_path = os.path.normpath(os.path.join(img_path, img_id))
         
-
         try:
             # Feature A
             asymmetry_score = util.feature_A.asymmetry_score(full_mask_path)
@@ -40,7 +65,7 @@ def main(csv_path, mask_path, img_path, save_path):
             color_score = util.feature_C.color_score(full_lesion_path, full_mask_path)
 
         except Exception as e:
-            print(f"Error with {img_id}: {e}")
+            print(f"Error processing {img_id}: {e}")
             asymmetry_score = np.nan
             border_score = np.nan
             color_score = np.nan
@@ -48,16 +73,18 @@ def main(csv_path, mask_path, img_path, save_path):
         feat_A_values.append(asymmetry_score)
         feat_B_values.append(border_score)
         feat_C_values.append(color_score)
-        print("*",end="")
+        if (len(feat_C_values) % 100) == 0:
+            print(f"Processed {len(feat_C_values)} images...")
+
     
 
     df["feat_A"] = feat_A_values
     df["feat_B"] = feat_B_values
     df["feat_C"] = feat_C_values
-    df["feat_D"] = ((df["diameter_1"] + df["diameter_2"]) / 2).round().astype(int)
+    df["feat_D"] = ((df["diameter_1"] + df["diameter_2"]) / 2)
     df["feat_E"] = (df["grew"] == "True") | (df["changed"] == "True")
     df['label'] = df["diagnostic"] == "MEL"
-     
+    
     # Gem udvalgt data
     df_out = df[["img_id", "feat_A", "feat_B","feat_C", "feat_D", "feat_E", "label"]]
     df_out.to_csv(save_path, index=False)
@@ -110,5 +137,5 @@ if __name__ == "__main__":
     img_path = "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/Project/EDA/imgs"
     save_path = "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/2025-FYP-groupSeahorse/result/result.csv"
     
-
+    #remove_rows_csv(csv_path, mask_path)
     main(csv_path, mask_path, img_path, save_path)

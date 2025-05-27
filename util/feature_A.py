@@ -13,7 +13,7 @@ from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.transform import rotate
 
-def asymmetry_score(mask_path, degrees_step=5):
+def asymmetry_score(mask_path, degrees_step=10):
     """
     Computes the mean asymmetry score for a binary lesion mask by rotating it
     in fixed degree increments and measuring vertical and horizontal asymmetry.

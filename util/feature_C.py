@@ -11,7 +11,7 @@ Higher scores indicate more color variation — often associated with melanoma.
 import numpy as np
 from skimage.io import imread
 from skimage.color import rgb2gray
-from full_preproces import preprocess
+from util.full_preproces import preprocess
 
 def color_score(image_path, mask_path):
     """
@@ -44,6 +44,13 @@ def color_score(image_path, mask_path):
         return None
     mask = preprocess_mask(mask_path)
     
+    
+    if mask.shape != image.shape[:2]:
+        # Resize mask to match image dimensions (1-pixel differences)
+        from skimage.transform import resize
+        print(f"Auto-resizing mask: {mask.shape} → {image.shape[:2]}")
+        mask = resize(mask, image.shape[:2], order=0, preserve_range=True, anti_aliasing=False) > 0.5
+
     # Apply mask to RGB image: extract only lesion pixels
     masked_pixels = image[mask]
 

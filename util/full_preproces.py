@@ -35,8 +35,18 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
 
     # Detect hair color, remove hair and applying morphological filter (Blackhat, Tophat)
     lap = cv2.Laplacian(gray, cv2.CV_64F) # laplacian filter, edge detection(rapid intensity changes)
-    mask = cv2.convertScaleAbs(lap) >= np.percentile(np.abs(lap), 100) # create binary mask of image (hairpixels) preferably
-    hair_type = "black" if np.mean(gray[mask]) < 128 else "white" # deteremines if dark or light hair based of mean intensity in edges
+    mask = cv2.convertScaleAbs(lap) >= np.percentile(np.abs(lap), 98) # create binary mask of image (hairpixels) preferably
+    
+    edge_values = gray[mask]
+    # deteremines if dark or light hair based of mean intensity in edges
+    if edge_values.size == 0:
+        hair_type = "black"
+    else:
+        if np.mean(gray[mask]) < 128:
+            hair_type = "black" 
+        else: 
+            hair_type = "white"
+    
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (25, 25)) # morphological structuring element (cross) 25x25
     op = cv2.MORPH_BLACKHAT if hair_type == "black" else cv2.MORPH_TOPHAT # 
     filtered = cv2.morphologyEx(gray, op, kernel) # filters the hairs detected by blackhat or tophat(whitehat)

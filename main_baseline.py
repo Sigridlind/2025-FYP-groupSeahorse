@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import util.classifier
 import util.feature_extraction
@@ -14,11 +15,12 @@ def main_baseline(metadata_path, mask_dir, img_dir, results_baseline_path):
 
     # extract features
     df = util.feature_extraction.feature_extraction(df, mask_dir, img_dir)
+    df.to_csv("result/features.csv")
 
     # fill NaN with column means so KNN works
-    df = df.fillna(df.mean())
-
-    # 
+    df_numeric = df.select_dtypes(include=[np.number])
+    df[df_numeric.columns] = df_numeric.fillna(df_numeric.mean())
+    
     util.classifier.classification(df, results_baseline_path)
 
 
@@ -29,6 +31,6 @@ if __name__ == "__main__":
     save_path = "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/2025-FYP-groupSeahorse/result/result.csv"
     
     # remove_rows_csv(csv_path, mask_path)
-    # main(csv_path, mask_path, img_path, save_path)
+    main_baseline(csv_path, mask_path, img_path, "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/2025-FYP-groupSeahorse/result/result_baseline.csv")
     # classification("result/result.csv", "result/result2.csv")
 

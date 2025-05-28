@@ -36,7 +36,7 @@ def asymmetry_score(mask_path, degrees_step=5):
             if n > half_sum:
                 return i # halfpoint x-axis
 
-  def crop_mask(mask): # new
+    def crop_mask(mask): # new
         mid = find_midpoint_v4(mask)
         y_nonzero, x_nonzero = np.nonzero(mask) # find 
         y_min, y_max = np.min(y_nonzero), np.max(y_nonzero) # find limits

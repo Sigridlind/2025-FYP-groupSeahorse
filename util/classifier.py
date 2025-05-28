@@ -14,7 +14,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     cv = KFold(n_splits=5, shuffle=True, random_state=17)
     # KNN
     knn_params = {'n_neighbors': [3, 5, 7, 9]}
-    knn = GridSearchCV(KNeighborsClassifier(), param_grid=knn_params, scoring='f1', cv=cv)
+    knn = GridSearchCV(KNeighborsClassifier(), param_grid=knn_params, scoring='recall', cv=cv)
     knn.fit(x_train, y_train)
     knn_best = knn.best_estimator_
     results["KNN"] = evaluate_model(knn_best, x_val, y_val)
@@ -22,7 +22,7 @@ def tune_models(x_train, y_train, x_val, y_val):
 
     # Decision Tree
     dt_params = {'max_depth': [3, 5, 10, None]}
-    dt = GridSearchCV(DecisionTreeClassifier(random_state=17), dt_params, scoring='f1', cv=cv)
+    dt = GridSearchCV(DecisionTreeClassifier(random_state=17), dt_params, scoring='recall', cv=cv)
     dt.fit(x_train, y_train)
     dt_best = dt.best_estimator_
     results["DecisionTree"] = evaluate_model(dt_best, x_val, y_val)
@@ -30,7 +30,7 @@ def tune_models(x_train, y_train, x_val, y_val):
 
     # Random Forest
     rf_params = {'max_depth': [3, 5, 10, None]}
-    rf = GridSearchCV(RandomForestClassifier(random_state=17), rf_params, scoring='f1', cv=cv)
+    rf = GridSearchCV(RandomForestClassifier(random_state=17), rf_params, scoring='recall', cv=cv)
     rf.fit(x_train, y_train)
     rf_best = rf.best_estimator_
     results["RandomForest"] = evaluate_model(rf_best, x_val, y_val)
@@ -74,15 +74,15 @@ def classification(df, results_path, baseline= True):
     
     final_results = {}
     for name, res in tuned_results.items():
-        print(f"\n{name} Validation F1: {res['f1']:.3f}, AUC: {res['auc']:.3f}, Accuracy: {res['acc']:.3f}, Precision: {res['precision']:.3f}, Recall: {res['recall']:.3f}")
+        print(f"\n{name} Validation; F1: {res['f1']:.3f}, AUC: {res['auc']:.3f}, Accuracy: {res['acc']:.3f}, Precision: {res['precision']:.3f}, Recall: {res['recall']:.3f}")
         print(f"{name} Best Hyperparameters: {res['params']}")
             
-    best_model_name = max(tuned_results, key=lambda name: tuned_results[name]["f1"])
+    best_model_name = max(tuned_results, key=lambda name: tuned_results[name]["recall"])
     best_model = tuned_results[best_model_name]["model"]
     print(f"Best model is (Based on validation performance): {best_model_name}")
     
     final_result = evaluate_model(best_model, x_test, y_test)
-    print(f"\n{best_model_name} Test F1: {final_result['f1']:.3f}, AUC: {final_result['auc']:.3f}, Accuracy: {final_result['acc']:.3f}, Precision: {final_result['precision']:.3f}, Recall: {final_result['recall']:.3f}")
+    print(f"\n{best_model_name} Test; F1: {final_result['f1']:.3f}, AUC: {final_result['auc']:.3f}, Accuracy: {final_result['acc']:.3f}, Precision: {final_result['precision']:.3f}, Recall: {final_result['recall']:.3f}")
     print("Confusion Matrix:\n", final_result["cm"])
     
     # write test results to CSV.

@@ -17,5 +17,5 @@ def main_extended(metadata_path, mask_dir, img_dir, results_extended_path):
     # fill NaN with column means so KNN works
     df = df.fillna(df.mean())
 
-    # 
+    # use classifiers and save results
     util.classifier.classification(df, results_extended_path, baseline= False)

@@ -18,7 +18,7 @@ def main_baseline(metadata_path, mask_dir, img_dir, results_baseline_path):
     # fill NaN with column means so KNN works
     df = df.fillna(df.mean())
 
-    # 
+    # classifiers and save results
     util.classifier.classification(df, results_baseline_path)
 
 

@@ -4,7 +4,8 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, train_test_split
+from imblearn.over_sampling import SMOTE
 
 def tune_models(x_train, y_train, x_val, y_val):
     results = {}

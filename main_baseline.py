@@ -3,7 +3,6 @@ import pandas as pd
 import util.classifier
 import util.feature_extraction
 import util.clean_data
-    
 
 def main_baseline(metadata_path, mask_dir, img_dir, results_baseline_path):
 

@@ -27,7 +27,6 @@ def clean_data(df, mask_dir, min_lesion_pixels=10, binarization_threshold=0.05):
         mask_path = os.path.normpath(os.path.join(mask_dir, mask_name))
 
         if not os.path.exists(mask_path):
-            print(f"Missing mask: {img_id}")
             continue
 
         try:
@@ -50,5 +49,5 @@ def clean_data(df, mask_dir, min_lesion_pixels=10, binarization_threshold=0.05):
         valid_rows.append(row)
     filtered_df = pd.DataFrame(valid_rows)
     print(f"Kept {len(filtered_df)} rows out of {len(df)}.")
-    
+
     return filtered_df

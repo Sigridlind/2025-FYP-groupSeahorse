@@ -35,8 +35,6 @@ def feature_extraction(df, mask_dir, img_dir):
         feat_A_values.append(asymmetry_score)
         feat_B_values.append(border_score)
         feat_C_values.append(color_score)
-        # if (len(feat_C_values) % 100) == 0:
-        #     print(f"Processed {len(feat_C_values)} images...")
 
     df["feat_A"] = feat_A_values
     df["feat_B"] = feat_B_values

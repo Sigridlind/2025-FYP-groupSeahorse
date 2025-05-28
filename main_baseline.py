@@ -156,7 +156,7 @@ def classification(feature_csv_path, results_path):
     final_result = util.classifier.evaluate_model(best_model, x_test, y_test)
     print(f"\n{best_model_name} Test F1: {final_result['f1']:.3f}, AUC: {final_result['auc']:.3f}, Accuracy: {final_result['acc']:.3f}, Precision: {final_result['precision']:.3f}, Recall: {final_result['recall']:.3f}")
     print("Confusion Matrix:\n", final_result["cm"])
-
+    
     # write test results to CSV.
     df_out = df.loc[x_test.index, ["img_id"]].copy()
     df_out["true_label"] = y_test.values

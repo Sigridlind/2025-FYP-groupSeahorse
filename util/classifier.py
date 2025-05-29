@@ -8,6 +8,49 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold, GridSearchCV, train_test_split, learning_curve
 from imblearn.over_sampling import SMOTE
 
+# Plotting helper
+def plot_gridsearch_results(grid_search_dict):
+    fig, axs = plt.subplots(len(grid_search_dict), 2, figsize=(14, 5 * len(grid_search_dict)))
+
+    if len(grid_search_dict) == 1:
+        axs = np.expand_dims(axs, axis=0)
+
+    summary_rows = []
+
+    for idx, (model_name, grid_obj) in enumerate(grid_search_dict.items()):
+        cv_results = grid_obj.cv_results_
+        param_name = list(grid_obj.param_grid.keys())[0]
+        param_values = cv_results[f"param_{param_name}"]
+        mean_score = cv_results["mean_test_score"]
+
+        axs[idx, 0].plot(param_values, mean_score, marker='o')
+        axs[idx, 0].set_title(f"{model_name} - Hyperparameter Tuning")
+        axs[idx, 0].set_xlabel(param_name)
+        axs[idx, 0].set_ylabel("Mean Recall (CV)")
+        axs[idx, 0].grid(True)
+
+        for pv, ms in zip(param_values, mean_score):
+            summary_rows.append({"Model": model_name, "Hyperparameter": f"{param_name}={pv}", "Mean Recall": ms})
+
+        train_sizes, train_scores, test_scores = learning_curve(
+            grid_obj.best_estimator_, grid_obj.X_, grid_obj.y_,
+            cv=5, scoring='recall', train_sizes=np.linspace(0.1, 1.0, 5), random_state=17)
+
+        train_mean = np.mean(train_scores, axis=1)
+        test_mean = np.mean(test_scores, axis=1)
+
+        axs[idx, 1].plot(train_sizes, train_mean, label="Train", marker='o')
+        axs[idx, 1].plot(train_sizes, test_mean, label="Validation", marker='o')
+        axs[idx, 1].set_title(f"{model_name} - Learning Curve")
+        axs[idx, 1].set_xlabel("Training Set Size")
+        axs[idx, 1].set_ylabel("Recall")
+        axs[idx, 1].legend()
+        axs[idx, 1].grid(True)
+
+    plt.tight_layout()
+    plt.show()
+    return pd.DataFrame(summary_rows)
+
 def tune_models(x_train, y_train, x_val, y_val):
     results = {}
 
@@ -16,6 +59,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     knn_params = {'n_neighbors': [3, 5, 7, 9]}
     knn = GridSearchCV(KNeighborsClassifier(), param_grid=knn_params, scoring='recall', cv=cv)
     knn.fit(x_train, y_train)
+    knn.X_, knn.y_ = x_train, y_train  # Store for learning curve
     knn_best = knn.best_estimator_
     results["KNN"] = evaluate_model(knn_best, x_val, y_val)
     results["KNN"]["params"] = knn.best_params_
@@ -24,6 +68,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     dt_params = {'max_depth': [3, 5, 10, None]}
     dt = GridSearchCV(DecisionTreeClassifier(random_state=17), dt_params, scoring='recall', cv=cv)
     dt.fit(x_train, y_train)
+    dt.X_, dt.y_ = x_train, y_train
     dt_best = dt.best_estimator_
     results["DecisionTree"] = evaluate_model(dt_best, x_val, y_val)
     results["DecisionTree"]["params"] = dt.best_params_
@@ -32,6 +77,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     rf_params = {'max_depth': [3, 5, 10, None]}
     rf = GridSearchCV(RandomForestClassifier(random_state=17), rf_params, scoring='recall', cv=cv)
     rf.fit(x_train, y_train)
+    rf.X_, rf.y_ = x_train, y_train
     rf_best = rf.best_estimator_
     results["RandomForest"] = evaluate_model(rf_best, x_val, y_val)
     results["RandomForest"]["params"] = rf.best_params_
@@ -70,9 +116,10 @@ def classification(df, results_path, baseline= True):
     x_train_res, y_train_res = smote.fit_resample(x_train, y_train)
     
     # Tune models using validation set
-    tuned_results = tune_models(x_train_res, y_train_res, x_val, y_val)
+    # tuned_results = tune_models(x_train_res, y_train_res, x_val, y_val)
+    tuned_results, grid_searches = tune_models(x_train_res, y_train_res, x_val, y_val)
     
-    final_results = {}
+    
     for name, res in tuned_results.items():
         print(f"\n{name} Validation; F1: {res['f1']:.3f}, AUC: {res['auc']:.3f}, Accuracy: {res['acc']:.3f}, Precision: {res['precision']:.3f}, Recall: {res['recall']:.3f}")
         print(f"{name} Best Hyperparameters: {res['params']}")
@@ -91,3 +138,6 @@ def classification(df, results_path, baseline= True):
     df_out["predicted_label"] = final_result["y_pred"]
     df_out["melanoma_probability"] = final_result["y_prob"]
     df_out.to_csv(results_path, index=False)
+    
+    # Generate plots
+    plot_gridsearch_results(grid_searches)

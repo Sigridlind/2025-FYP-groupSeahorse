@@ -156,6 +156,25 @@ def classification(df, results_path, baseline= True):
     print(f"  Recall     : {final_result['recall']:.3f}")
     print("  Confusion Matrix:")
     print(final_result["cm"])
+    
+    
+    # Generate classification report as dictionary
+    from sklearn.metrics import classification_report
+    import pandas as pd
+
+    report_dict = classification_report(
+        y_test,
+        final_result["y_pred"],
+        target_names=["Melanoma", "Non-Melanoma"],
+        output_dict=True)
+
+    # Convert to DataFrame
+    report_df = pd.DataFrame(report_dict).T
+    latex_table = report_df.to_latex(float_format="%.2f")
+    with open("classification_report.tex", "w") as f:
+        f.write(latex_table)
+    
+    
 
     
     # write test results to CSV.

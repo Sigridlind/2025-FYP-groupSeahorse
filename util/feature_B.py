@@ -47,7 +47,10 @@ def border_irregularity(mask_path):
             return 0.0 # Avoid division by zero
 
         compactness = (4 * pi * area) / (perimeter_len ** 2) # normalized compactness score
-        return round(1 - compactness, 3)
+        norm_score = round(1 - compactness, 3)
+        if norm_score < 0:
+            return None
+        return norm_score
 
     mask = preprocess_mask(mask_path)
     return compute_score(mask)

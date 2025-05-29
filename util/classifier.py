@@ -82,7 +82,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     results["RandomForest"] = evaluate_model(rf_best, x_val, y_val)
     results["RandomForest"]["params"] = rf.best_params_
 
-    return results
+    return results, {"KNN": knn, "DecisionTree": dt, "RandomForest": rf}
 
 def evaluate_model(model, x, y):
     y_pred = model.predict(x)

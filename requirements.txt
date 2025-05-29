@@ -1,0 +1,9 @@
+imbalanced-learn==0.13.0
+matplotlib==3.10.3
+numpy==2.2.6
+opencv-python==4.11.0.86
+pandas==2.2.3
+scikit-image==0.25.2
+scikit-learn==1.6.1
+seaborn==0.13.2
+Jinja2==3.1.4

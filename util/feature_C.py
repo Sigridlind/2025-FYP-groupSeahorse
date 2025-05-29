@@ -11,7 +11,7 @@ Higher scores indicate more color variation — often associated with melanoma.
 import numpy as np
 from skimage.io import imread
 from skimage.color import rgb2gray
-from util.full_preproces import preprocess
+from util.inpaint_util import preprocess
 
 def color_score(image_path, mask_path):
     """

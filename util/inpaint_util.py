@@ -26,7 +26,7 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
     import cv2
     import numpy as np
     from skimage.metrics import peak_signal_noise_ratio, structural_similarity
-    from img_util import readImageFile
+    from util.img_util import readImageFile
     
     # Reads images as RGB, gray, and an original
     img, gray, original = readImageFile(image_path)

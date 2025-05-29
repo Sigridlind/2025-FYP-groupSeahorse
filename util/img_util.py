@@ -7,7 +7,7 @@ def readImageFile(file_path):
     # read image as an 8-bit array
     bgr = cv2.imread(file_path)
     
-    if img is None: # if no image return none
+    if bgr is None: # if no image return none
         return None
     
     original = bgr.copy() # copy, for comparing later

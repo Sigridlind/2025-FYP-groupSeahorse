@@ -26,12 +26,11 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
     import cv2
     import numpy as np
     from skimage.metrics import peak_signal_noise_ratio, structural_similarity
+    from img_util import readImageFile
     
-    img = cv2.imread(image_path)
-    if img is None: # if no image return none
-        return None
-    original = img.copy() # copy, for comparing later
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # convert to gray
+    # Reads images as RGB, gray, and an original
+    img, gray, original = readImageFile(image_path)
+    
 
     # Detect hair color, remove hair and applying morphological filter (Blackhat, Tophat)
     lap = cv2.Laplacian(gray, cv2.CV_64F) # laplacian filter, edge detection(rapid intensity changes)

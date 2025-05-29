@@ -5,15 +5,20 @@ import cv2
 
 def readImageFile(file_path):
     # read image as an 8-bit array
-    img_bgr = cv2.imread(file_path)
+    bgr = cv2.imread(file_path)
+    
+    if img is None: # if no image return none
+        return None
+    
+    original = bgr.copy() # copy, for comparing later
 
     # convert to RGB
-    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    img = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
     # convert the original image to grayscale
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
-    return img_rgb, img_gray
+    return img, gray, original
 
 
 def saveImageFile(img_rgb, file_path):

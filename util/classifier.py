@@ -1,17 +1,17 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix, roc_auc_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import KFold
-from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.model_selection import KFold, GridSearchCV, train_test_split, learning_curve
 from imblearn.over_sampling import SMOTE
 
 def tune_models(x_train, y_train, x_val, y_val):
     results = {}
 
-    cv = KFold(n_splits=5, shuffle=True, random_state=17)
+    cv = KFold(n_splits=5, shuffle=True, random_state=17) # Apply seeding for cross validation
     # KNN
     knn_params = {'n_neighbors': [3, 5, 7, 9]}
     knn = GridSearchCV(KNeighborsClassifier(), param_grid=knn_params, scoring='recall', cv=cv)

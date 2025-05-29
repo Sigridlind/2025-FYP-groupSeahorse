@@ -15,7 +15,7 @@ def main_extended(metadata_path, mask_dir, img_dir, results_extended_path):
     # extract features
     df = util.feature_extraction.feature_extraction(df, mask_dir, img_dir)
 
-    # fill NaN with column means so KNN works
+    # save to csv
     df.to_csv("dataset.csv")
 
     # fill NaN with column means so KNN works

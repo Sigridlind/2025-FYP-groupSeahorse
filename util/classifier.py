@@ -8,48 +8,29 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold, GridSearchCV, train_test_split, learning_curve
 from imblearn.over_sampling import SMOTE
 
-# Plotting helper
-def plot_gridsearch_results(grid_search_dict):
-    fig, axs = plt.subplots(len(grid_search_dict), 2, figsize=(14, 5 * len(grid_search_dict)))
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
-    if len(grid_search_dict) == 1:
-        axs = np.expand_dims(axs, axis=0)
+def plot_confusion_matrix(cm, class_names=["Not MEL", "MEL"], title="Confusion Matrix"):
+    """
+    Plots a labeled confusion matrix.
 
-    summary_rows = []
+    Parameters:
+        cm (array-like): 2x2 confusion matrix.
+        class_names (list): Labels for the classes.
+        title (str): Title of the plot.
+    """
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                xticklabels=class_names, yticklabels=class_names)
 
-    for idx, (model_name, grid_obj) in enumerate(grid_search_dict.items()):
-        cv_results = grid_obj.cv_results_
-        param_name = list(grid_obj.param_grid.keys())[0]
-        param_values = cv_results[f"param_{param_name}"]
-        mean_score = cv_results["mean_test_score"]
-
-        axs[idx, 0].plot(param_values, mean_score, marker='o')
-        axs[idx, 0].set_title(f"{model_name} - Hyperparameter Tuning")
-        axs[idx, 0].set_xlabel(param_name)
-        axs[idx, 0].set_ylabel("Mean Recall (CV)")
-        axs[idx, 0].grid(True)
-
-        for pv, ms in zip(param_values, mean_score):
-            summary_rows.append({"Model": model_name, "Hyperparameter": f"{param_name}={pv}", "Mean Recall": ms})
-
-        train_sizes, train_scores, test_scores = learning_curve(
-            grid_obj.best_estimator_, grid_obj.X_, grid_obj.y_,
-            cv=5, scoring='recall', train_sizes=np.linspace(0.1, 1.0, 5), random_state=17)
-
-        train_mean = np.mean(train_scores, axis=1)
-        test_mean = np.mean(test_scores, axis=1)
-
-        axs[idx, 1].plot(train_sizes, train_mean, label="Train", marker='o')
-        axs[idx, 1].plot(train_sizes, test_mean, label="Validation", marker='o')
-        axs[idx, 1].set_title(f"{model_name} - Learning Curve")
-        axs[idx, 1].set_xlabel("Training Set Size")
-        axs[idx, 1].set_ylabel("Recall")
-        axs[idx, 1].legend()
-        axs[idx, 1].grid(True)
-
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.title(title)
     plt.tight_layout()
     plt.show()
-    return pd.DataFrame(summary_rows)
+
 
 def tune_models(x_train, y_train, x_val, y_val):
     results = {}
@@ -138,6 +119,4 @@ def classification(df, results_path, baseline= True):
     df_out["predicted_label"] = final_result["y_pred"]
     df_out["melanoma_probability"] = final_result["y_prob"]
     df_out.to_csv(results_path, index=False)
-    
-    # Generate plots
-    plot_gridsearch_results(grid_searches)
+    plot_confusion_matrix(final_result["cm"], title=f"{best_model_name} - Test Confusion Matrix")

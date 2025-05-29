@@ -9,9 +9,8 @@ The score is calculated as the sum of standard deviations of R, G, and B pixel v
 Higher scores indicate more color variation — often associated with melanoma.
 """
 import numpy as np
-from skimage.io import imread
-from skimage.color import rgb2gray
 from util.inpaint_util import preprocess
+from util.img_util import preprocess_mask
 
 def color_score(image_path, mask_path):
     """
@@ -26,16 +25,7 @@ def color_score(image_path, mask_path):
         float: Sum of RGB standard deviations inside the lesion (rounded to 3 decimals).
                Returns 0 if the mask is empty or None if preprocessing fails.
     """
-    def preprocess_mask(mask_path): # convert to binary if not
-        """
-        Loads the mask and binarizes it (True for lesion pixels).
-        Converts RGB to grayscale if necessary.
-        """
-        mask = imread(mask_path)
-        if mask.ndim == 3:
-            mask = rgb2gray(mask)
-        return mask > 0
-    
+
     # Apply image preprocessing: removes hair, denoises, keeps original size
     image = preprocess(image_path, apply_eq=False, apply_denoise=True, resize=False)
     

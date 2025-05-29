@@ -9,9 +9,8 @@ A perfectly symmetrical lesion will have a score near 0. More asymmetrical lesio
 
 import numpy as np
 from math import ceil, floor
-from skimage.io import imread
-from skimage.color import rgb2gray
 from skimage.transform import rotate
+from util.img_util import preprocess_mask
 
 def asymmetry_score(mask_path, degrees_step=10):
     """
@@ -25,13 +24,6 @@ def asymmetry_score(mask_path, degrees_step=10):
     Returns:
         float: Mean asymmetry score across all rotated versions.
     """
-
-    def preprocess_mask(mask):
-        """Checks if mask is binary, otherwise convert"""
-        mask = imread(mask)
-        if mask.ndim == 3:
-            mask = rgb2gray(mask)
-        return mask > 0
 
     def find_midpoint_v1(mask):
         """Find midpoint based on full mask shape (used in compute_asymmetry)"""

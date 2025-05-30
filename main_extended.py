@@ -3,7 +3,6 @@ import numpy as np
 import util.classifier
 import util.feature_extraction
 import util.clean_data
-from util.classifier import plot_confusion_matrix
     
 def main_extended(metadata_path, mask_dir, img_dir, results_extended_path):
 

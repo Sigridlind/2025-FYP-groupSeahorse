@@ -2,14 +2,12 @@ import cv2
 from skimage.io import imread
 from skimage.color import rgb2gray
 
-"""
-Reading an image and returning the RGB, grayscale, and original BGR versions.
-"""
-
 def readImageFile(file_path):
+    """
+    Reading an image and returning the RGB, grayscale, and original BGR versions.
+    """
     # read image as an 8-bit array
     bgr = cv2.imread(file_path)
-    
     
     if bgr is None: # if no image return none
         return None

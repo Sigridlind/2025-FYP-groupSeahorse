@@ -27,7 +27,7 @@ def readImageFile(file_path):
 def preprocess_mask(mask_path):  
     # The path to the binary or grayscale mask image
         """
-        Loading a mask and converts it to binary if it's not. Converting to grayscale if RGB.
+        Loading a mask and converting it to binary if it's not. Converting to grayscale if RGB.
         """
         mask = imread(mask_path)
         if mask.ndim == 3:

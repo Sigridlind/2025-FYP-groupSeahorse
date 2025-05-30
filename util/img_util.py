@@ -2,9 +2,14 @@ import cv2
 from skimage.io import imread
 from skimage.color import rgb2gray
 
+"""
+Reading an image and returning the RGB, grayscale, and original BGR versions.
+"""
+
 def readImageFile(file_path):
     # read image as an 8-bit array
     bgr = cv2.imread(file_path)
+    
     
     if bgr is None: # if no image return none
         return None
@@ -19,10 +24,10 @@ def readImageFile(file_path):
 
     return img, gray, original
 
-def preprocess_mask(mask_path): # convert to binary if not
+def preprocess_mask(mask_path):  
+    # The path to the binary or grayscale mask image
         """
-        Loads the mask and binarizes it (True for lesion pixels).
-        Converts RGB to grayscale if necessary.
+        Loading a mask and converts it to binary if it's not. Converting to grayscale if RGB.
         """
         mask = imread(mask_path)
         if mask.ndim == 3:

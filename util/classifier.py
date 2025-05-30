@@ -16,16 +16,13 @@ It does the following:
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix, roc_auc_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold, GridSearchCV, train_test_split, learning_curve
 from imblearn.over_sampling import SMOTE
-
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
 
 def plot_confusion_matrix(cm, class_names=["Not MEL", "MEL"], title="Confusion Matrix"):
     """
@@ -48,16 +45,24 @@ def plot_confusion_matrix(cm, class_names=["Not MEL", "MEL"], title="Confusion M
 
 
 def tune_models(x_train, y_train, x_val, y_val):
+    """
+    Tunes KNN, Decision Tree, and Random Forest classifiers using GridSearchCV
+    and evaluates them on the validation set.
+    
+    Returns:
+        - results: Dict with performance metrics and parameters.
+        - grid_searches: Dict with GridSearchCV objects for each model.
+    """
     results = {}
     # Creates cross-validation with 5 folds 
     cv = KFold(n_splits=5, shuffle=True, random_state=17) # Apply seeding for cross validation
     
     # KNN
-    # it tries multiple values and picks the one with best recall score 
+    # Try multiple values for n_neighbors and select best based on recall 
     knn_params = {'n_neighbors': [3, 5, 7, 9]}
     knn = GridSearchCV(KNeighborsClassifier(), param_grid=knn_params, scoring='recall', cv=cv)
     knn.fit(x_train, y_train)
-    knn.X_, knn.y_ = x_train, y_train  # Store for learning curve
+    knn.X_, knn.y_ = x_train, y_train
     knn_best = knn.best_estimator_
     results["KNN"] = evaluate_model(knn_best, x_val, y_val)
     results["KNN"]["params"] = knn.best_params_
@@ -73,6 +78,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     results["DecisionTree"]["params"] = dt.best_params_
 
     # Random Forest
+    # Try multiple values for max depth and select best based on recall
     rf_params = {'max_depth': [3, 5, 10, None]}  # A dictionary of possible depth values to test in the grid search
     rf = GridSearchCV(RandomForestClassifier(random_state=17), rf_params, scoring='recall', cv=cv) # using grid search to find the best max_depth
     rf.fit(x_train, y_train)
@@ -85,6 +91,13 @@ def tune_models(x_train, y_train, x_val, y_val):
 
 # Evaluating a classification model on given data using multiple performance metrics
 def evaluate_model(model, x, y):
+    """
+    Evaluates a trained classifier on given data and returns performance metrics.
+    
+    Returns:
+        A dictionary containing accuracy, precision, recall, F1 score, AUC,
+        predictions, probabilities, and the confusion matrix.
+    """
     y_pred = model.predict(x)
     y_prob = model.predict_proba(x)[:, 1]
     acc = accuracy_score(y, y_pred)
@@ -96,7 +109,15 @@ def evaluate_model(model, x, y):
     return {"model": model,"acc": acc,"recall": recall, "precision": precision,"f1": f1, "auc": auc, "cm": cm, "y_pred": y_pred, "y_prob": y_prob}     # Return a dictionary with all metrics, predictions and probabilities
 
 def classification(df, results_path, baseline= True):
-    
+    """
+    Main classification pipeline:
+        - Select features
+        - Split data
+        - Balance with SMOTE
+        - Train and tune models
+        - Evaluate best model
+        - Output results and save classification report & predictions
+    """
     # select only the baseline features.
     if baseline:
         features = ["feat_A", "feat_B", "feat_C"] # [col for col in df.columns if col.startswith("feat_")]

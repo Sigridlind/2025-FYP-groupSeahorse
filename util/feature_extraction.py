@@ -5,15 +5,12 @@ import util.feature_A
 import util.feature_B
 import util.feature_C
 
-"""
-Extracts ABCDE features for each lesion image in dataset.
-
-Returns dataframe with extracted features and labels for ABCDE
-
-"""
-
 def feature_extraction(df, mask_dir, img_dir):
+    """
+    Extracts ABCDE features for each lesion image in dataset.
+    Returns dataframe with extracted features and labels for ABCDE
     
+    """
     feat_A_values = []
     feat_B_values = []
     feat_C_values = []

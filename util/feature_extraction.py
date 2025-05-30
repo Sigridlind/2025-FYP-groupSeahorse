@@ -5,6 +5,13 @@ import util.feature_A
 import util.feature_B
 import util.feature_C
 
+"""
+Extracts features ABCDE for each lesion image in dataset.
+
+Returns dataframe with extracted features and labels for ABCDE
+
+"""
+
 def feature_extraction(df, mask_dir, img_dir):
     
     feat_A_values = []
@@ -39,8 +46,8 @@ def feature_extraction(df, mask_dir, img_dir):
     df["feat_A"] = feat_A_values
     df["feat_B"] = feat_B_values
     df["feat_C"] = feat_C_values
-    df["feat_D"] = ((df["diameter_1"] + df["diameter_2"]) / 2)
-    df["feat_E"] = (df["grew"] == "True") | (df["changed"] == "True")
+    df["feat_D"] = ((df["diameter_1"] + df["diameter_2"]) / 2) # find combined diameter by taking mean
+    df["feat_E"] = (df["grew"] == "True") | (df["changed"] == "True") # combine to one column with binary classification (True and False)
     df['label'] = df["diagnostic"] == "MEL"
     
     return df[["img_id", "feat_A", "feat_B", "feat_C", "feat_D", "feat_E", "label"]]

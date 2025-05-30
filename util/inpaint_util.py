@@ -14,7 +14,7 @@ optionally applies denoising and histogram equalization, and resizes the image i
 Used as part of feature extraction, especially for computing color features inside lesion regions.
 """
 
-### hair removal + check quality after removal. Optional denoise, equalizing and resizing.
+# hair removal + check quality after removal. Optional denoise, equalizing and resizing.
 def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
    
    

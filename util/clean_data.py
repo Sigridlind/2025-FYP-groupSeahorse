@@ -6,43 +6,43 @@ from skimage.color import rgb2gray
 
 def clean_data(df, mask_dir, min_lesion_pixels=10, binarization_threshold=0.05):
     """
-    Removes rows where:
-    - the corresponding mask does not exist
-    - removes imgs were segmentation masks were inaccurate
-    - or the mask has fewer than `min_lesion_pixels` with intensity above `binarization_threshold`
+    Cleans metadata by removing rows with missing or invalid lesion masks.
+
+    A row is removed if:
+    - The corresponding mask file is missing
+    - The mask has too few lesion pixels after binarization
+    - The mask could not be read or processed
 
     Parameters:
-        csv_path (str): Path to your local metadata CSV
-        mask_dir (str): Path to the local folder with lesion masks
-        min_lesion_pixels (int): Minimum lesion pixels required to keep the row
-        binarization_threshold (float): Threshold to binarize the mask (default: 0.05)
+        df (pd.DataFrame): Input metadata table with image IDs
+        mask_dir (str): Directory containing segmentation mask files
+        min_lesion_pixels (int): Minimum number of pixels required in the lesion mask
+        binarization_threshold (float): Threshold for binarizing grayscale mask
 
     Returns:
-        None: Updates the CSV in-place
+        pd.DataFrame: Filtered DataFrame containing only valid rows
     """
-    
-    # exclude_ids = {"PAT_488_931_321.png", "PAT_1725_3222_943.png"} !!!!
+    # Store rows that pass all checks
     valid_rows = []
 
     for idx, row in df.iterrows():
         img_id = row["img_id"]
         
-        #if img_id in exclude_ids: !!!!!!
-            #print(f"Excluded known problematic image: {img_id}")
-            #continue
-        
         mask_name = img_id.replace(".png", "_mask.png")
         mask_path = os.path.normpath(os.path.join(mask_dir, mask_name))
-
+        
+        # Skip if mask file is missing
         if not os.path.exists(mask_path):
             continue
 
         try:
             mask = imread(mask_path)
-
+            
+            # Convert RGB mask to grayscale if needed
             if mask.ndim == 3:
                 mask = rgb2gray(mask)
-
+            
+            # Binarize mask based on threshold
             binary_mask = mask > binarization_threshold
             lesion_pixels = np.sum(binary_mask)
 
@@ -55,6 +55,8 @@ def clean_data(df, mask_dir, min_lesion_pixels=10, binarization_threshold=0.05):
             continue
 
         valid_rows.append(row)
+
+    # Rebuild DataFrame with only valid entries
     filtered_df = pd.DataFrame(valid_rows)
     print(f"Kept {len(filtered_df)} rows out of {len(df)}.")
 

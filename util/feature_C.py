@@ -1,5 +1,3 @@
-##### USES PREPROCESSED IMAGE(hairremoval and uint8 changed, and quality check)
-
 """
 feature_C.py
 
@@ -11,6 +9,7 @@ Higher scores indicate more color variation — often associated with melanoma.
 import numpy as np
 from util.inpaint_util import preprocess
 from util.img_util import preprocess_mask
+from skimage.transform import resize
 
 def color_score(image_path, mask_path):
     """
@@ -37,7 +36,6 @@ def color_score(image_path, mask_path):
     
     if mask.shape != image.shape[:2]:
         # Resize mask to match image dimensions (1-pixel differences)
-        from skimage.transform import resize
         print(f"Auto-resizing mask: {mask.shape} → {image.shape[:2]}")
         mask = resize(mask, image.shape[:2], order=0, preserve_range=True, anti_aliasing=False) > 0.5
 

@@ -140,19 +140,6 @@ def classification(df, results_path, baseline= True):
     # tuned_results = tune_models(x_train_res, y_train_res, x_val, y_val)
     tuned_results, grid_searches = tune_models(x_train_res, y_train_res, x_val, y_val)
     
-    # print("Validation:")
-    # for name, res in tuned_results.items():
-    #     print(f"\n{name} Validation; F1: {res['f1']:.3f}, AUC: {res['auc']:.3f}, Accuracy: {res['acc']:.3f}, Precision: {res['precision']:.3f}, Recall: {res['recall']:.3f}")
-    #     print(f"{name} Best Hyperparameters: {res['params']}")
-            
-    # best_model_name = max(tuned_results, key=lambda name: tuned_results[name]["recall"])
-    # best_model = tuned_results[best_model_name]["model"]
-    # print(f"Best model is (Based on validation performance): {best_model_name}")
-    
-    # final_result = evaluate_model(best_model, x_test, y_test)
-    # print(f"\n{best_model_name} Test; F1: {final_result['f1']:.3f}, AUC: {final_result['auc']:.3f}, Accuracy: {final_result['acc']:.3f}, Precision: {final_result['precision']:.3f}, Recall: {final_result['recall']:.3f}")
-    # print("Confusion Matrix:\n", final_result["cm"])
-    
     print(f"\nValidation Performance per Model")
     for name, res in tuned_results.items():
         print(f"\n{name}")

@@ -1,17 +1,8 @@
 """
-full_preprocess.py
 
-This module defines a preprocessing pipeline for dermoscopic images.
+This file processes skin images to prepare them for analysis. 
 It removes hair artifacts using morphological filtering and inpainting,
 optionally applies denoising and histogram equalization, and resizes the image if requested.
-
-Used as part of feature extraction, especially for computing color features inside lesion regions.
-"""
-
-### hair removal + check quality after removal. Optional denoise, equalizing and resizing.
-def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
-    """
-    Preprocesses a lesion image by removing hair, optionally denoising, equalizing, and resizing it.
 
     Parameters:
         image_path (str): Path to the input RGB image.
@@ -19,10 +10,14 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
         apply_denoise (bool): If True, apply bilateral filtering to denoise the image.
         resize (bool): If True, resize the image to a fixed size.
         output_size (tuple): Target size for resizing (default: 224x224).
+        
+Used as part of feature extraction, especially for computing color features inside lesion regions.
+"""
 
-    Returns:
-        np.ndarray or None: Preprocessed RGB image, or None if quality check fails.
-    """
+### hair removal + check quality after removal. Optional denoise, equalizing and resizing.
+def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
+   
+   
     import cv2
     import numpy as np
     from skimage.metrics import peak_signal_noise_ratio, structural_similarity
@@ -37,7 +32,7 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
     mask = cv2.convertScaleAbs(lap) >= np.percentile(np.abs(lap), 98) # create binary mask of image (hairpixels) preferably
     
     edge_values = gray[mask]
-    # deteremines if dark or light hair based of mean intensity in edges
+    # deteremines if dark or light hair based on mean intensity in edges
     if edge_values.size == 0:
         hair_type = "black"
     else:
@@ -47,7 +42,7 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
             hair_type = "white"
     
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (25, 25)) # morphological structuring element (cross) 25x25
-    op = cv2.MORPH_BLACKHAT if hair_type == "black" else cv2.MORPH_TOPHAT # 
+    op = cv2.MORPH_BLACKHAT if hair_type == "black" else cv2.MORPH_TOPHAT 
     filtered = cv2.morphologyEx(gray, op, kernel) # filters the hairs detected by blackhat or tophat(whitehat)
     _, hmask = cv2.threshold(filtered, 10, 255, cv2.THRESH_BINARY) # converts to binary hair mask
     hairless = cv2.inpaint(img, hmask, 3, cv2.INPAINT_TELEA) # inpain the hairmasks
@@ -70,5 +65,3 @@ def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, ou
 
     return hairless.astype(np.uint8) 
 
-### Example of usage (options for denoising, equalizing, resizing(224,224))
-# img = preprocess("path/to/image.png", apply_eq=False, apply_denoise=False, resize=False)

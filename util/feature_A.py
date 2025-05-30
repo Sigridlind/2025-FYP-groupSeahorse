@@ -105,7 +105,6 @@ def asymmetry_score(mask_path, degrees_step=10):
             scores[deg] = compute_asymmetry(trimmed)
         return scores
 
-    # --- Full process ---
     mask = preprocess_mask(mask_path)
     mask = crop_mask(mask)
     scores = rotation_asymmetry(mask, degrees_step)

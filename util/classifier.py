@@ -165,7 +165,6 @@ def classification(df, results_path, baseline= True):
     print("  Confusion Matrix:")
     print(final_result["cm"])
     
-    
     # Generate classification report as dictionary
     from sklearn.metrics import classification_report
     import pandas as pd
@@ -181,9 +180,6 @@ def classification(df, results_path, baseline= True):
     latex_table = report_df.to_latex(float_format="%.2f")
     with open("classification_report.tex", "w") as f:
         f.write(latex_table)
-    
-    
-
     
     # write test results to CSV.
     df_out = df.loc[x_test.index, ["img_id"]].copy()

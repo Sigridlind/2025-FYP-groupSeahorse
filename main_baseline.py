@@ -3,6 +3,7 @@ import pandas as pd
 import util.classifier
 import util.feature_extraction
 import util.clean_data
+from util.classifier import plot_confusion_matrix
 
 def main_baseline(metadata_path, mask_dir, img_dir, results_baseline_path):
 
@@ -34,5 +35,3 @@ if __name__ == "__main__":
     
     # remove_rows_csv(csv_path, mask_path)
     main_baseline(csv_path, mask_path, img_path, "C:/Users/Lenovo/OneDrive - ITU/Uni/2. Semester/Projects DS/2025-FYP-groupSeahorse/result/result_baseline.csv")
-    # classification("result/result.csv", "result/result2.csv")
-

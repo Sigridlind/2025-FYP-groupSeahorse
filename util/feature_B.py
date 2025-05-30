@@ -9,9 +9,8 @@ A perfect circle returns a score near 0. More complex, jagged lesions return sco
 
 import numpy as np
 from skimage import morphology
-from skimage.io import imread
-from skimage.color import rgb2gray
 from math import pi
+from util.img_util import preprocess_mask
 
 def border_irregularity(mask_path):
     """
@@ -25,16 +24,7 @@ def border_irregularity(mask_path):
                where 0 indicates a perfectly circular (regular) shape,
                and values closer to 1 indicate more irregular borders.
     """
-    def preprocess_mask(mask):
-        """
-        Loads the mask and converts it to binary (True/False).
-        If RGB, it's converted to grayscale first.
-        """
-        mask = imread(mask)
-        if mask.ndim == 3:
-            mask = rgb2gray(mask)
-        return mask > 0
-
+    
     def compute_score(mask):
         """
         Computes the compactness-based irregularity score using:
@@ -57,7 +47,10 @@ def border_irregularity(mask_path):
             return 0.0 # Avoid division by zero
 
         compactness = (4 * pi * area) / (perimeter_len ** 2) # normalized compactness score
-        return round(1 - compactness, 3)
+        norm_score = round(1 - compactness, 3)
+        if norm_score < 0:
+            return None
+        return norm_score
 
     mask = preprocess_mask(mask_path)
     return compute_score(mask)

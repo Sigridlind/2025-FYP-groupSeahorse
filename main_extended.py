@@ -3,6 +3,7 @@ import numpy as np
 import util.classifier
 import util.feature_extraction
 import util.clean_data
+from util.classifier import plot_confusion_matrix
     
 def main_extended(metadata_path, mask_dir, img_dir, results_extended_path):
 
@@ -14,6 +15,9 @@ def main_extended(metadata_path, mask_dir, img_dir, results_extended_path):
 
     # extract features
     df = util.feature_extraction.feature_extraction(df, mask_dir, img_dir)
+
+    # save to csv
+    df.to_csv("dataset.csv")
 
     # fill NaN with column means so KNN works
     df_numeric = df.select_dtypes(include=[np.number])

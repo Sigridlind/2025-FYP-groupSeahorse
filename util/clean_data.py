@@ -8,6 +8,7 @@ def clean_data(df, mask_dir, min_lesion_pixels=10, binarization_threshold=0.05):
     """
     Removes rows where:
     - the corresponding mask does not exist
+    - removes imgs were segmentation masks were inaccurate
     - or the mask has fewer than `min_lesion_pixels` with intensity above `binarization_threshold`
 
     Parameters:
@@ -19,10 +20,17 @@ def clean_data(df, mask_dir, min_lesion_pixels=10, binarization_threshold=0.05):
     Returns:
         None: Updates the CSV in-place
     """
+    
+    # exclude_ids = {"PAT_488_931_321.png", "PAT_1725_3222_943.png"} !!!!
     valid_rows = []
 
     for idx, row in df.iterrows():
         img_id = row["img_id"]
+        
+        #if img_id in exclude_ids: !!!!!!
+            #print(f"Excluded known problematic image: {img_id}")
+            #continue
+        
         mask_name = img_id.replace(".png", "_mask.png")
         mask_path = os.path.normpath(os.path.join(mask_dir, mask_name))
 

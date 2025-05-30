@@ -15,7 +15,7 @@ def main_baseline(metadata_path, mask_dir, img_dir, results_baseline_path):
 
     # extract features
     df = util.feature_extraction.feature_extraction(df, mask_dir, img_dir)
-
+    
     # save features in dataset.csv
     df.to_csv("dataset.csv")
 

@@ -55,7 +55,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     """
     results = {}
     # Creates cross-validation with 5 folds 
-    cv = KFold(n_splits=5, shuffle=True, random_state=17) # Apply seeding for cross validation
+    cv = KFold(n_splits=5, shuffle=True, random_state=57) # Apply seeding for cross validation
     
     # KNN
     # Try multiple values for n_neighbors and select best based on recall 
@@ -70,7 +70,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     # Decision Tree
     # Tune max_depth and check with which hyperparameter it performs the best 
     dt_params = {'max_depth': [3, 5, 10, None]}     # A dictionary of possible depth values to test in the grid search
-    dt = GridSearchCV(DecisionTreeClassifier(random_state=17), dt_params, scoring='recall', cv=cv)
+    dt = GridSearchCV(DecisionTreeClassifier(random_state=57), dt_params, scoring='recall', cv=cv)
     dt.fit(x_train, y_train)  # It trains and evaluates 4 models across 5 cross-validation folds 
     dt.X_, dt.y_ = x_train, y_train
     dt_best = dt.best_estimator_
@@ -80,7 +80,7 @@ def tune_models(x_train, y_train, x_val, y_val):
     # Random Forest
     # Try multiple values for max depth and select best based on recall
     rf_params = {'max_depth': [3, 5, 10, None]}  # A dictionary of possible depth values to test in the grid search
-    rf = GridSearchCV(RandomForestClassifier(random_state=17), rf_params, scoring='recall', cv=cv) # using grid search to find the best max_depth
+    rf = GridSearchCV(RandomForestClassifier(random_state=57), rf_params, scoring='recall', cv=cv) # using grid search to find the best max_depth
     rf.fit(x_train, y_train)
     rf.X_, rf.y_ = x_train, y_train
     rf_best = rf.best_estimator_
@@ -127,13 +127,13 @@ def classification(df, results_path, baseline= True):
     y_all = df["label"]
 
     # split the dataset into training and testing sets.
-    x_train, x_temp, y_train, y_temp = train_test_split(x_all, y_all, test_size=0.3, random_state=17)
+    x_train, x_temp, y_train, y_temp = train_test_split(x_all, y_all, test_size=0.3, random_state=57)
 
-    # split testing sets into 15% val, 15% test
-    x_val, x_test, y_val, y_test = train_test_split(x_temp, y_temp, test_size=0.5, random_state=17)
+    # split testing sets into 23% val, 23% test
+    x_val, x_test, y_val, y_test = train_test_split(x_temp, y_temp, test_size=0.5, random_state=57)
 
     # Apply SMOTE to training set
-    smote = SMOTE(random_state=17)
+    smote = SMOTE(random_state=57)
     x_train_res, y_train_res = smote.fit_resample(x_train, y_train)
     
     # Tune models using validation set

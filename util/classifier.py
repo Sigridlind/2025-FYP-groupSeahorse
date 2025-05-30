@@ -15,34 +15,12 @@ It does the following:
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix, roc_auc_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold, GridSearchCV, train_test_split
 from imblearn.over_sampling import SMOTE
-
-def plot_confusion_matrix(cm, class_names=["Not MEL", "MEL"], title="Confusion Matrix"):
-    """
-    Plots a labeled confusion matrix.
-
-    Parameters:
-        cm (array-like): 2x2 confusion matrix.
-        class_names (list): Labels for the classes.
-        title (str): Title of the plot.
-    """
-    plt.figure(figsize=(6, 5))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
-                xticklabels=class_names, yticklabels=class_names)
-
-    plt.xlabel("Predicted")
-    plt.ylabel("Actual")
-    plt.title(title)
-    plt.tight_layout()
-    plt.show()
-
 
 def tune_models(x_train, y_train, x_val, y_val):
     """
@@ -138,7 +116,7 @@ def classification(df, results_path, baseline= True):
     
     # Tune models using validation set
     # tuned_results = tune_models(x_train_res, y_train_res, x_val, y_val)
-    tuned_results, grid_searches = tune_models(x_train_res, y_train_res, x_val, y_val)
+    tuned_results = tune_models(x_train_res, y_train_res, x_val, y_val)
     
     print(f"\nValidation Performance per Model")
     for name, res in tuned_results.items():
@@ -163,23 +141,8 @@ def classification(df, results_path, baseline= True):
     print(f"  Precision  : {final_result['precision']:.3f}")
     print(f"  Recall     : {final_result['recall']:.3f}")
     print("  Confusion Matrix:")
-    print(final_result["cm"])
-    
-    # Generate classification report as dictionary
-    from sklearn.metrics import classification_report
-    import pandas as pd
 
-    report_dict = classification_report(
-        y_test,
-        final_result["y_pred"],
-        target_names=["Melanoma", "Non-Melanoma"],
-        output_dict=True)
-
-    # Convert to DataFrame
-    report_df = pd.DataFrame(report_dict).T
-    latex_table = report_df.to_latex(float_format="%.2f")
-    with open("classification_report.tex", "w") as f:
-        f.write(latex_table)
+    print(final_result["cm"])  
     
     # write test results to CSV.
     df_out = df.loc[x_test.index, ["img_id"]].copy()
@@ -187,4 +150,3 @@ def classification(df, results_path, baseline= True):
     df_out["predicted_label"] = final_result["y_pred"]
     df_out["melanoma_probability"] = final_result["y_prob"]
     df_out.to_csv(results_path, index=False)
-    plot_confusion_matrix(final_result["cm"], title=f"{best_model_name} - Test Confusion Matrix")

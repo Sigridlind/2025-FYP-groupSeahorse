@@ -1,28 +1,23 @@
-"""
+import cv2
+import numpy as np
+from skimage.metrics import peak_signal_noise_ratio, structural_similarity
+from util.img_util import readImageFile
 
-This file processes skin images to prepare them for analysis. 
-It removes hair artifacts using morphological filtering and inpainting,
-optionally applies denoising and histogram equalization, and resizes the image if requested.
-
-    Parameters:
-        image_path (str): Path to the input RGB image.
-        apply_eq (bool): If True, apply histogram equalization (grayscale only).
-        apply_denoise (bool): If True, apply bilateral filtering to denoise the image.
-        resize (bool): If True, resize the image to a fixed size.
-        output_size (tuple): Target size for resizing (default: 224x224).
-        
-Used as part of feature extraction, especially for computing color features inside lesion regions.
-"""
-
-# hair removal and check quality after removal. Optional denoise, equalizing and resizing.
 def preprocess(image_path, apply_eq=False, apply_denoise=False, resize=False, output_size=(224, 224)):
-   
-   
-    import cv2
-    import numpy as np
-    from skimage.metrics import peak_signal_noise_ratio, structural_similarity
-    from util.img_util import readImageFile
-    
+    """
+    Processes skin images to prepare them for analysis. 
+    Removes hair artifacts using morphological filtering and inpainting,
+    optionally applies denoising and histogram equalization, and resizes the image if requested.
+
+        Parameters:
+            image_path (str): Path to the input RGB image.
+            apply_eq (bool): If True, apply histogram equalization (grayscale only).
+            apply_denoise (bool): If True, apply bilateral filtering to denoise the image.
+            resize (bool): If True, resize the image to a fixed size.
+            output_size (tuple): Target size for resizing (default: 224x224).
+            
+    Used as part of feature extraction, especially for computing color features inside lesion regions.
+    """    
     # Reads images as RGB, gray, and an original
     img, gray, original = readImageFile(image_path)
     

@@ -29,6 +29,7 @@ def preprocess_mask(mask_path):
         """
         Loading a mask and converting it to binary if it's not. Converting to grayscale if RGB.
         """
+        # Convert RGB mask to grayscale if needed
         mask = imread(mask_path)
         if mask.ndim == 3:
             mask = rgb2gray(mask)

@@ -21,7 +21,7 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import KFold, GridSearchCV, train_test_split, learning_curve
+from sklearn.model_selection import KFold, GridSearchCV, train_test_split
 from imblearn.over_sampling import SMOTE
 
 def plot_confusion_matrix(cm, class_names=["Not MEL", "MEL"], title="Confusion Matrix"):
